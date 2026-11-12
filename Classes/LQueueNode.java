@@ -26,7 +26,7 @@ public class LQueueNode {
      * @param data
      */
     public LQueueNode(Customer data) {
-        LQueueNode(data, null);
+        new LQueueNode(data, null);
     }
 
     /**
