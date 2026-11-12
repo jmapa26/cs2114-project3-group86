@@ -1,62 +1,66 @@
 /**
- * Implements a singly linked FIFO queue of customers waiting at a register
+ * Represents a node in the linked queue, storing a
+ * customer reference and a reference to the next node
  * 
  * @author David Solyom (dsolyom)
  * @version November 12, 2026
  */
-public class LQueue {
-    private LQueueNode front;
-    private LQueueNode back;
-    private int size;
+public class LQueueNode {
+    private Customer data;
+    private LQueueNode next;
 
     /**
-     * Creates a new singly-linked LQueue
+     * Creates a new LQueueNode
+     * @param data
+     *        this node's Customer object
+     * @param next
+     *        the node after this node in the LQueue
      */
-    public LQueue() {
-        // TODO
+    public LQueueNode(Customer data, LQueueNode next) {
+        this.data = data;
+        this.next = next;
     }
 
     /**
-     * Adds a Customer to the rear
-     * @param customer
-     *        the Customer added to the LQueue
-     * @throws IllegalArgumentException if customer is null
+     * Creates a new LQueueNode with no next node
+     * @param data
+     *        this node's Customer object
      */
-    public void enqueue(Customer customer) {
-        // TODO
+    public LQueueNode(Customer data) {
+        this(data, null);
     }
 
     /**
-     * Removes and returns the front Customer
-     * @return the Customer removed from the LQueue
-     * @throws NoSuchElementException if the LQueue is empty
+     * Returns the Customer's information
+     * @return this node's Customer object
      */
-    public Customer dequeue() {
-        // TODO
+    public Customer getData() {
+        return data;
     }
 
     /**
-     * Returns the front Customer without removing them
-     * @return the Customer at the front of the LQueue
-     * @throws NoSuchElementException if the LQueue is empty
+     * Sets the Customer information to the Customer argument
+     * @param data
+     *        the Customer object to be assigned to this node
      */
-    public Customer peek() {
-        // TODO
+    public void setData(Customer data) {
+        this.data = data;
     }
 
     /**
-     * Returns true when the LQueue has no Customers
-     * @return true if size is 0
+     * Returns the next node
+     * @return the node after this node in the LQueue
      */
-    public boolean isEmpty() {
-        return size == 0;
+    public LQueueNode getNext() {
+        return next;
     }
 
     /**
-     * Returns the number of Customers in the LQueue
-     * @return number of Customers in the LQueue
+     * Sets the next node to the LQueueNode argument
+     * @param next
+     *        the node to come after this one
      */
-    public int size() {
-        return size;
+    public void setNext(LQueueNode next) {
+        this.next = next;
     }
 }
