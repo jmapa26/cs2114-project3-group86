@@ -1,5 +1,5 @@
 /**
- * FoodItem
+ * Represents a menu item, including its name, price, and preparation time
  * 
  * @author David Solyom (dsolyom)
  * @version November 12, 2026

@@ -1,5 +1,6 @@
 /**
- * Order
+ * Stores a customer's selected food items,
+ * quantities, total price, and completion status
  * 
  * @author David Solyom (dsolyom)
  * @version November 12, 2026

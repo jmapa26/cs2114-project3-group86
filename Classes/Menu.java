@@ -1,5 +1,5 @@
 /**
- * Menu
+ * Stores available food items and provides methods for looking up menu selections
  * 
  * @author David Solyom (dsolyom)
  * @version November 12, 2026

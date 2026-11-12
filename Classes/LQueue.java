@@ -1,5 +1,5 @@
 /**
- * LQueue
+ * Implements a singly linked FIFO queue of customers waiting at a register
  * 
  * @author David Solyom (dsolyom)
  * @version November 12, 2026

@@ -1,5 +1,6 @@
 /**
- * LQueueNode
+ * Represents a node in the linked queue, storing a
+ * customer reference and a reference to the next node
  * 
  * @author David Solyom (dsolyom)
  * @version November 12, 2026

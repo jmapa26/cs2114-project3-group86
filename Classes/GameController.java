@@ -1,5 +1,6 @@
 /**
- * GameController
+ * Receives player commands, calls the appropriate Model methods,
+ * handles errors, and updates the View after changes occur
  * 
  * @author Rohail Amjad (ramjad)
  * @version November 12, 2026

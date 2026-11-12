@@ -1,5 +1,5 @@
 /**
- * Customer
+ * Represents an individual customer with a unique identifier and name
  * 
  * @author David Solyom (dsolyom)
  * @version November 12, 2026

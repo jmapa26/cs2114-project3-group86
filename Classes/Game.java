@@ -1,5 +1,6 @@
 /**
- * Game
+ * Stores the restaurant's overall state, including registers, pending
+ * orders, money, completed orders, satisfaction, and shift status
  * 
  * @author David Solyom (dsolyom)
  * @version November 12, 2026

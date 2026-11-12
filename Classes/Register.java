@@ -1,5 +1,5 @@
 /**
- * Register
+ * Represents an individual cash register and manages its customer waiting line
  * 
  * @author David Solyom (dsolyom)
  * @version November 12, 2026
