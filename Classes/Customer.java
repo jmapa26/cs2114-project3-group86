@@ -10,16 +10,38 @@ public class Customer {
 
     /**
      * Constructs a new customer object and initializes fields
+     * @param customerId
+     *        the customer's unique ID
+     * @param name
+     *        the customer's name
+     * @throws IllegalArgumentException if name is null or blank
      */
-    public Customer() {
-        // TODO
+    public Customer(int customerId, String name) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Customer name cannot be empty");
+        }
+        this.customerId = customerId;
+        this.name = name;
     }
 
+    /**
+     * Returns the customer's ID
+     * @return customerId
+     */
     public int getCustomerId() {
         return customerId;
     }
 
+    /**
+     * Returns the customer's name
+     * @return name
+     */
     public String getName() {
         return name;
+    }
+
+    @Override
+    public String toString() {
+        return name + " (#" + customerId + ")";
     }
 }
