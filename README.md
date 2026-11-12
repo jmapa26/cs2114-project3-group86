@@ -155,9 +155,7 @@ advanced cooking/inventory, and specialized customer behavior.
 
 ## Attribution
 
-The names below follow the `@author` headers in the source files. The team
-should confirm the file-by-file division of work before submission. A dash
-in the GenAI column means no GenAI-assisted change is present in that file;
+A dash in the GenAI column means no GenAI-assisted change is present in that file;
 reverted work and earlier project-wide use are noted below when known.
 
 | Class / test file | Contributor and work (source header) | GenAI note |
