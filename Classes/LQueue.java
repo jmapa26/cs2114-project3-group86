@@ -1,66 +1,89 @@
+import java.util.NoSuchElementException;
+
 /**
- * Represents a node in the linked queue, storing a
- * customer reference and a reference to the next node
+ * Implements a singly linked FIFO queue of customers waiting at a register
  * 
  * @author David Solyom (dsolyom)
  * @version November 12, 2026
  */
-public class LQueueNode {
-    private Customer data;
-    private LQueueNode next;
+public class LQueue {
+    private LQueueNode front;
+    private LQueueNode back;
+    private int size;
 
     /**
-     * Creates a new LQueueNode
-     * @param data
-     *        this node's Customer object
-     * @param next
-     *        the node after this node in the LQueue
+     * Creates a new singly-linked LQueue
      */
-    public LQueueNode(Customer data, LQueueNode next) {
-        this.data = data;
-        this.next = next;
+    public LQueue() {
+        front = null;
+        back = null;
+        size = 0;
     }
 
     /**
-     * Creates a new LQueueNode with no next node
-     * @param data
-     *        this node's Customer object
+     * Adds a Customer to the rear
+     * @param customer
+     *        the Customer added to the LQueue
+     * @throws IllegalArgumentException if customer is null
      */
-    public LQueueNode(Customer data) {
-        this(data, null);
+    public void enqueue(Customer customer) {
+        if (customer == null) {
+            throw new IllegalArgumentException("Customer cannot be null");
+        }
+        LQueueNode node = new LQueueNode(customer);
+        if (isEmpty()) {
+            front = node;
+        }
+        else {
+            back.setNext(node);
+        }
+        back = node;
+        size++;
     }
 
     /**
-     * Returns the Customer's information
-     * @return this node's Customer object
+     * Removes and returns the front Customer
+     * @return the Customer removed from the LQueue
+     * @throws NoSuchElementException if the LQueue is empty
      */
-    public Customer getData() {
-        return data;
+    public Customer dequeue() {
+        if (isEmpty()) {
+            throw new NoSuchElementException("Queue is empty");
+        }
+        Customer result = front.getData();
+        front = front.getNext();
+        if (front == null) {
+            back = null;
+        }
+        size--;
+        return result;
     }
 
     /**
-     * Sets the Customer information to the Customer argument
-     * @param data
-     *        the Customer object to be assigned to this node
+     * Returns the front Customer without removing them
+     * @return the Customer at the front of the LQueue
+     * @throws NoSuchElementException if the LQueue is empty
      */
-    public void setData(Customer data) {
-        this.data = data;
+    public Customer peek() {
+        if (isEmpty()) {
+            throw new NoSuchElementException("Queue is empty");
+        }
+        return front.getData();
     }
 
     /**
-     * Returns the next node
-     * @return the node after this node in the LQueue
+     * Returns true when the LQueue has no Customers
+     * @return true if size is 0
      */
-    public LQueueNode getNext() {
-        return next;
+    public boolean isEmpty() {
+        return size == 0;
     }
 
     /**
-     * Sets the next node to the LQueueNode argument
-     * @param next
-     *        the node to come after this one
+     * Returns the number of Customers in the LQueue
+     * @return number of Customers in the LQueue
      */
-    public void setNext(LQueueNode next) {
-        this.next = next;
+    public int size() {
+        return size;
     }
 }
