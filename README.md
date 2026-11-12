@@ -1,50 +1,191 @@
-#- cs2114-project3-group86
-# Restaurant Simulator
+# CS2114 Project 3: Restaurant Simulator
 
-Restaurant Simulator is a restaurant management game where the player manages multiple cash registers, takes customer orders, prepares food, and serves customers. The restaurant contains several registers, including indoor checkout lines and a drive-through. Customers arrive throughout the game and enter different lines, requiring the player to decide which register to prioritize.
+Restaurant Simulator models a restaurant with multiple checkout registers.
+Customers wait in register lines, place food orders, and the player prepares
+and serves those orders. The game tracks active orders, money earned,
+completed orders, customer satisfaction, and shift status.
 
----
+The model uses a custom singly linked FIFO queue for each register's waiting
+customers and a shared FIFO queue for orders waiting to be prepared.
 
-# Reflection
+## Running the Program
 
-TO REPLACE:
-- *What changed from your specification?* Classes, method signatures, where validation lives, test cases — what did the spec say, what did you build instead, and why?
-- *Did the model really stand alone?* Was there anything you had to move across the model/view line to make it run, or anything in the model that still knows about the view?
-- *What happened to your unknowns?* Of the things you listed in your scope as not knowing how to do, which did you figure out, and which are still open?
-- *What doesn't work yet?* MVP features, bad-input cases, or tests that are missing or failing.
+Use JDK 11 or newer. From the repository root, compile the classes:
 
----
+```sh
+mkdir -p /tmp/cs2114-project3-classes
+javac -d /tmp/cs2114-project3-classes Classes/*.java
+```
 
-# Next Steps
+Run the console version:
 
-TO REPLACE:
-- *What is left to finish the MVP?* The remaining features and fixes, in the order you will do them.
-- *Your change feature.* Deliverable 4 requires you to add one non-trivial feature that was not in your MVP. Name it, then predict which classes it will touch (model, view, controller) and which ones your design says should not need to change. You will compare this prediction to what actually happened.
-- *Which stretch goals will you attempt?* The ones from your scope you are committing to, and the ones you are dropping.
-- *What new tests will you need?* The methods and bad-input cases the added work must cover.
-- *Who does what?* Which team member owns each remaining item.
+```sh
+java -cp /tmp/cs2114-project3-classes GameController
+```
 
----
+Run the Swing version instead:
 
-# Attribution
+```sh
+java -cp /tmp/cs2114-project3-classes GameController gui
+```
 
-| Class / test file | Who worked on it and how | GenAI note |
+The launcher currently selects one view at a time. In the console, a basic
+shift can be exercised with commands such as `start`, `arrive 1`,
+`select 1`, `order 1 Burger=2 Soda=1`, `prepare`, `serve 1`, `end`, and
+`quit`. The GUI has controls for starting and ending a shift, selecting a
+register, and preparing orders; its command field accepts the other
+controller commands.
+
+### Running the Model Tests
+
+The JUnit 3 tests in `Tests/` construct model objects directly; they do not
+start either view. Run `GameTest`, `LQueueTest`, `RegisterTest`, `MenuTest`,
+and `OrderTest` with the JUnit runner configured by the course IDE. This
+repository has no Maven or Gradle build file and does not include a JUnit
+dependency, so the test runner must be available in the IDE.
+
+## Reflection
+
+### Differences from the Scope and Specification
+
+- The Scope calls for customers to arrive and place orders automatically.
+  The current controller instead exposes `arrive <register>` and
+  `order <register> <items>` commands. The continuous game loop and automatic
+  order generation remain unfinished.
+- The Specification describes `Game.getSnapshot()`. The implementation
+  names this method `Game.getRestaurantSnapshot()` and returns an immutable
+  `RestaurantSnapshot` with register names, line lengths, active order
+  summaries, and restaurant statistics.
+- Register customer lines use the project's `LQueue`; the shared pending
+  order queue is backed by Java's `ArrayDeque`.
+- Validation is split as designed: the model validates game rules and menu
+  selections, while `GameController` parses commands and reports errors.
+- The one-argument `LQueueNode` constructor was corrected to initialize its
+  customer data and next reference by delegating to the two-argument
+  constructor.
+
+### Model/View Separation
+
+The model (`Game`, `Register`, `Customer`, `Order`, `Menu`, `FoodItem`,
+`OrderStatus`, `LQueue`, `LQueueNode`, and `RestaurantSnapshot`) does not
+depend on either view. `GameController` passes formatted snapshots and
+messages to the console or Swing view. The JUnit model tests can therefore
+exercise the queues and game rules without opening a UI.
+
+### What We Learned and What Remains Unknown
+
+The custom FIFO queue, multiple register lines, shared order queue, order
+state transitions, and immutable snapshots are implemented and covered by
+model tests. The main open questions from the Scope are how to pace a
+continuous arrival/order loop and how to balance incoming customers with
+order preparation. Customer patience, cooking-time progression, and
+difficulty changes are not implemented.
+
+### Current Gaps
+
+- Arrivals and orders are still initiated manually rather than generated by
+  the game loop requested in the Scope.
+- `FoodItem` stores a price and preparation time but does not validate
+  negative values, and preparation time is not used to delay an order.
+- The optional `purchaseUpgrade` method deducts money but does not yet
+  represent or apply a concrete upgrade.
+- There are model tests for `Game`, `LQueue`, `Register`, `Menu`, and `Order`,
+  but no tests for `GameController`, either view, `FoodItem`, `Customer`, or
+  `RestaurantSnapshot`.
+
+## Next Steps
+
+The following are proposed assignments based on the source authors and
+should be confirmed by the team.
+
+### Remaining MVP Work (in order)
+
+1. Implement a shift-controlled game loop that generates customers and
+   creates valid menu orders automatically. Stop generation when the shift
+   ends or the program exits. **Proposed owners:** Rohail Amjad
+   (`GameController`) and David Solyom (model integration); Jacob Mapa will
+   verify the console and GUI feedback.
+2. Add controller and integration tests for arrival/order generation,
+   routing across registers, command errors, and stopping the loop.
+   **Proposed owners:** Rohail Amjad and David Solyom.
+3. Add the specified `FoodItem` validation for negative prices and
+   preparation times, and decide how waiting customers affect ending a
+   shift. **Proposed owner:** David Solyom, with tests reviewed by Rohail
+   Amjad.
+4. Run the normal console and GUI paths and update the run instructions as
+   the behavior changes. **Proposed owner:** Jacob Mapa.
+
+### Deliverable 4 Change Feature
+
+Add a **skip/requeue action for the next pending order**. A `skip` command
+will move the oldest unprepared order to the back of the pending queue,
+allowing the next order to be prepared first.
+
+Predicted changes:
+
+- `Game.deferNextOrder()` will perform the FIFO requeue and leave order
+  status and restaurant totals unchanged.
+- `GameController.handleCommand()` and a new `handleDeferNextOrder()` will
+  expose the action and report an empty-queue error.
+- `Game.getRestaurantSnapshot()` and `RestaurantSnapshot` will expose the
+  pending order sequence so the changed preparation priority is visible.
+- `GameTest` will cover reordering, empty queues, and unchanged order state
+  and statistics. A controller test will cover the command and its error
+  case.
+- `ConsoleView` and `WindowView` should not need new controls: both already
+  pass commands through the controller and display refreshed status.
+
+`Order`, `OrderStatus`, `Register`, `Customer`, `LQueue`, `Menu`, and
+`FoodItem` should not need to change for this feature.
+
+### Stretch Goals
+
+For Deliverable 4, we propose focusing on the MVP and the requeue change
+feature rather than taking on additional Scope stretch goals. We will defer
+customer patience, restaurant upgrade effects, increasing difficulty,
+advanced cooking/inventory, and specialized customer behavior.
+
+### Proposed Work Allocation
+
+- Automatic simulation and its model/controller tests: David Solyom and
+  Rohail Amjad.
+- Requeue model behavior and `GameTest`: David Solyom.
+- Requeue command and controller tests: Rohail Amjad.
+- Console/GUI integration checks and documentation: Jacob Mapa.
+
+## Attribution
+
+The names below follow the `@author` headers in the source files. The team
+should confirm the file-by-file division of work before submission. A dash
+in the GenAI column means no GenAI-assisted change is present in that file;
+reverted work and earlier project-wide use are noted below when known.
+
+| Class / test file | Contributor and work (source header) | GenAI note |
 | --- | --- | --- |
-| ConsoleView | ... | ... |
-| WindowView | ... | ... |
-| GameController | ... | ... |
-| Game | ... | ... |
-| GameTest | ... | ... |
-| Register | ... | ... |
-| RegisterTest | ... | ... |
-| Customer | ... | ... |
-| Order | ... | ... |
-| OrderTest | ... | ... |
-| OrderStatus | ... | ... |
-| Menu | ... | ... |
-| MenuTest | ... | ... |
-| FoodItem | ... | ... |
-| LQueue | ... | ... |
-| LQueueTest | ... | ... |
-| LQueueNode | ... | ... |
-| RestaurantSnapshot | ... | ... |
+| `ConsoleView.java` | Jacob Mapa — console view implementation | Assisted implementation |
+| `WindowView.java` | Jacob Mapa — Swing view implementation | Assisted implementation |
+| `GameController.java` | Rohail Amjad — controller implementation | Automation draft reverted |
+| `Game.java` | David Solyom — model implementation | — |
+| `Register.java` | David Solyom — model implementation | — |
+| `Customer.java` | David Solyom — model implementation | — |
+| `Order.java` | David Solyom — model implementation | — |
+| `OrderStatus.java` | David Solyom — model implementation | — |
+| `Menu.java` | David Solyom — model implementation | — |
+| `FoodItem.java` | David Solyom — model implementation | — |
+| `LQueue.java` | David Solyom — queue implementation | — |
+| `LQueueNode.java` | David Solyom — queue implementation | Assisted constructor fix |
+| `RestaurantSnapshot.java` | David Solyom — snapshot implementation | — |
+| `GameTest.java` | David Solyom — JUnit tests | — |
+| `LQueueTest.java` | David Solyom — JUnit tests | — |
+| `RegisterTest.java` | David Solyom — JUnit tests | — |
+| `MenuTest.java` | David Solyom — JUnit tests | — |
+| `OrderTest.java` | David Solyom — JUnit tests | — |
+
+### GenAI Note
+
+GenAI assisted with the `ConsoleView` and `WindowView` implementations, the
+`LQueueNode` constructor fix, and this README update. An automatic
+arrival/order simulation draft for `GameController` was reverted at the
+user's request and is not in the current code. The team should review the
+generated changes and add any earlier GenAI use not captured in this
+session.
