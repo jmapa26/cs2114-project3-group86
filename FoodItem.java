@@ -1,0 +1,9 @@
+/**
+ * FoodItem
+ * 
+ * @author David Solyom (dsolyom)
+ * @version November 12, 2026
+ */
+public class FoodItem {
+    
+}
